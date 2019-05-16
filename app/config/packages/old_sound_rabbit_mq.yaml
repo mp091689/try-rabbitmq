@@ -1,0 +1,25 @@
+old_sound_rabbit_mq:
+    connections:
+        default:
+            url: '%env(RABBITMQ_URL)%'
+    producers:
+        # use 'old_sound_rabbit_mq.task_producer' service to send data.
+        contact:
+            class: App\Producer\ContactProducer
+            connection: default
+            exchange_options: { name: 'repository.contact', type: direct }
+    multiple_consumers:
+        contact:
+            connection:       default
+            exchange_options: {name: 'repository.contact', type: direct}
+            queues:
+                create_contact:
+                    name: creat-contact
+                    callback: App\Consumer\CreateContactConsumer
+                    routing_keys:
+                        - create
+                update_contact:
+                    name: update-contact
+                    callback: App\Consumer\UpdateContactConsumer
+                    routing_keys:
+                        - update

@@ -1,0 +1,8 @@
+monolog:
+    channels: ['contact']
+    handlers:
+        contact_logging:
+            type: stream
+            path: "%kernel.logs_dir%/contact.log"
+            level: debug
+            channels: ["contact"]
