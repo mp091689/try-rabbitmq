@@ -11,7 +11,6 @@ use App\Services\CacheServiceInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
-use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -75,11 +74,13 @@ class CreateContactConsumer implements ConsumerInterface
             if (count($errors) > 0) {
                 $this->logger->error((string)$errors);
             } else {
+                $this->entityManager->getConnection()->connect();
                 $this->entityManager->persist($contact);
                 $this->entityManager->flush();
-                $cacheKey = $contact->getId().'_'.Contact::class;
+                $cacheKey = $contact->getId() . '_' . Contact::class;
                 $this->cacheService->setValue($cacheKey, $contact);
                 $this->entityManager->clear();
+                $this->entityManager->getConnection()->close();
             }
         } catch (\Exception $e) {
             $this->logger->critical($e->getMessage());

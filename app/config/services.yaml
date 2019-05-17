@@ -39,6 +39,8 @@ services:
     App\Consumer\UpdateContactConsumer:
         arguments:
             - '@doctrine.orm.entity_manager'
+            - '@App\Services\CacheServiceInterface'
+            - '@validator'
             - '@monolog.logger.contact'
 
     redis_cache_service:

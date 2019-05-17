@@ -108,34 +108,14 @@ class ContactController extends AbstractFOSRestController implements ClassResour
      */
     public function putAction(Request $request, int $id): JsonResponse
     {
-//        $contact = $this->findOneContactById($id);
-//
-//        if (!$contact) {
-//            $status = Response::HTTP_NOT_FOUND;
-//
-//            return $this->json(
-//                [
-//                    'status' => Response::$statusTexts[$status],
-//                    'message' => "The contact was not found with specified id: {$id}",
-//                ],
-//                $status
-//            );
-//        }
-//        $form = $this->createForm(ContactType::class, $contact);
-//        $form->submit(json_decode($request->getContent(), true));
-//        if (!$form->isValid()) {
-//            $status = Response::HTTP_BAD_REQUEST;
-//
-//            return $this->json(
-//                [
-//                    'status' => Response::$statusTexts[$status],
-//                    'message' => (string)$form->getErrors(true),
-//                ],
-//                $status
-//            );
-//        }
-//
-        $this->contactProducer->publish('hi', 'update');
+        $data = json_encode(
+            [
+                'id' => $id,
+                'data' => json_decode($request->getContent(), true),
+            ]
+        );
+
+        $this->contactProducer->publish($data, 'update');
 
         $status = Response::HTTP_OK;
 
