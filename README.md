@@ -4,7 +4,7 @@
 
 Go to dockerized folder and run docker-compose:
 
-`$ cd PATH\TO\PROJECT\dockerized && docker-compose up`
+`$ cd PATH\TO\PROJECT\dockerized && cp .env.example .env && docker-compose up`
 
 Also we need to start rabbitmq consumer. To start it we need
 to enter into the php container
