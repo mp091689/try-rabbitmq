@@ -1,21 +1,22 @@
-# How to start project
-
-----
+## How to start project
 
 Go to dockerized folder and run docker-compose:
 
-`$ cd PATH\TO\PROJECT\dockerized && cp .env.example .env && docker-compose up`
+`$ cd PATH/TO/PROJECT/dockerized && cp .env.example .env && docker-compose up`
 
-Also we need to start rabbitmq consumer. To start it we need
+Also we need to install dependencies using composer 
+and start rabbitmq consumer. To start it we need
 to enter into the php container
 
 `$ docker exec -it dockerized_php_1 su dev`
 
-And inside the container run:
+Inside the container run commands:
 
-`bin/console rabbitmq:multiple-consumer contact`
+`$ composer install`
 
-----
+`$ bin/console rabbitmq:multiple-consumer contact`
+
+## Usage
 
 Project should be accessible with `localhost:8080`
 or `app.local:8080` if /etc/hosts are configured.
@@ -77,8 +78,6 @@ POST, PUT, DELETE requests are send one response:
 
 All validation and other error are logged in `app/var/log/contact.log`
 
-----
-
 ## Used Technologies
 
 * NGINX
@@ -86,3 +85,17 @@ All validation and other error are logged in `app/var/log/contact.log`
 * MySQL 5.7
 * Redis
 * RabbitMQ
+
+## Additional
+
+RabbitMQ UI is accessible by link http://localhost:15672
+
+> login: mquser
+>
+> password : mqsecret
+
+Redis CLI is accessible with console command
+
+```bash
+$ docker exec -it dockerized_cache_1 redis-cli
+```
