@@ -15,9 +15,9 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- * Class UpdateContactConsumer
+ * Class DeleteContactConsumer
  */
-class UpdateContactConsumer implements ConsumerInterface
+class DeleteContactConsumer implements ConsumerInterface
 {
     /**
      * @var EntityManagerInterface
@@ -44,18 +44,15 @@ class UpdateContactConsumer implements ConsumerInterface
      *
      * @param EntityManagerInterface $entityManager
      * @param CacheServiceInterface  $cacheService
-     * @param ValidatorInterface     $validator
      * @param LoggerInterface        $logger
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         CacheServiceInterface $cacheService,
-        ValidatorInterface $validator,
         LoggerInterface $logger
     ) {
         $this->entityManager = $entityManager;
         $this->cacheService = $cacheService;
-        $this->validator = $validator;
         $this->logger = $logger;
     }
 
@@ -67,25 +64,19 @@ class UpdateContactConsumer implements ConsumerInterface
     public function execute(AMQPMessage $msg)
     {
         try {
-            $body = json_decode($msg->getBody(), true);
+            $id = $msg->getBody();
             $this->entityManager->getConnection()->connect();
-            $contact = $this->entityManager->getRepository(Contact::class)->findOneBy(['id' => $body['id']]);
+            $contact = $this->entityManager->getRepository(Contact::class)->findOneBy(['id' => $id]);
             if (!$contact) {
-                $this->logger->error("Contact was not found with id: {$body['id']}");
+                $this->logger->error("Contact was not found with id: {$id}");
 
                 return;
             }
-            $contact->setFirstName($body['data']['firstName']);
-            $errors = $this->validator->validate($contact);
-            if (count($errors) > 0) {
-                $this->logger->error((string)$errors);
-
-                return;
-            }
-            $this->entityManager->merge($contact);
+            $entity = $this->entityManager->merge($contact);
+            $this->entityManager->remove($entity);
             $this->entityManager->flush();
-            $cacheKey = $contact->getId() . '_' . Contact::class;
-            $this->cacheService->setValue($cacheKey, $contact);
+            $cacheKey = $id . '_' . Contact::class;
+            $this->cacheService->delValue($cacheKey);
             $this->entityManager->clear();
             $this->entityManager->getConnection()->close();
         } catch (\Exception $e) {

@@ -128,8 +128,23 @@ class ContactController extends AbstractFOSRestController implements ClassResour
         );
     }
 
-    public function deleteAction(): JsonResponse
+    /**
+     * @param int $id
+     *
+     * @return JsonResponse
+     */
+    public function deleteAction(int $id): JsonResponse
     {
+        $this->contactProducer->publish($id, 'delete');
 
+        $status = Response::HTTP_OK;
+
+        return $this->json(
+            [
+                'status' => Response::$statusTexts[$status],
+                'message' => 'Sent to the queue',
+            ],
+            $status
+        );
     }
 }

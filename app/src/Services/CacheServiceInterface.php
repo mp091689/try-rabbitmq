@@ -31,4 +31,13 @@ interface CacheServiceInterface
      * @return mixed|null
      */
     public function getValue(string $key);
+
+    /**
+     * Delete value from the cache with the specific key.
+     *
+     * @param string $key
+     *
+     * @return mixed
+     */
+    public function delValue(string $key): void;
 }

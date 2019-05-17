@@ -42,6 +42,11 @@ services:
             - '@App\Services\CacheServiceInterface'
             - '@validator'
             - '@monolog.logger.contact'
+    App\Consumer\DeleteContactConsumer:
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@App\Services\CacheServiceInterface'
+            - '@monolog.logger.contact'
 
     redis_cache_service:
         class: Doctrine\Common\Cache\RedisCache

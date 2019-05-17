@@ -52,4 +52,13 @@ class CacheService implements CacheServiceInterface
 
         return null;
     }
+
+    /**
+     * {@inheritDoc}
+     * @throws \Psr\Cache\InvalidArgumentException
+     */
+    public function delValue(string $key): void
+    {
+        $this->cacheItemPool->deleteItem(md5($key));
+    }
 }
