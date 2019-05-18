@@ -18,8 +18,14 @@ services:
         restart: always
         volumes:
             - ${APP_PATH}:/app
+    consume:
+        image: mp091689/php:latest
+        restart: always
+        volumes:
+            - ${APP_PATH}:/app
         depends_on:
             - mq
+        command: /bin/ash -c "bin/console rabbitmq:multiple-consumer contact"
     db:
         image: mysql:5.7
         restart: always

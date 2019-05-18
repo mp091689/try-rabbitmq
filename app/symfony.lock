@@ -1,4 +1,7 @@
 {
+    "beberlei/assert": {
+        "version": "v3.2.0"
+    },
     "doctrine/annotations": {
         "version": "1.0",
         "recipe": {
@@ -141,6 +144,12 @@
     },
     "psr/simple-cache": {
         "version": "1.0.1"
+    },
+    "simple-bus/message-bus": {
+        "version": "v3.0.2"
+    },
+    "simple-bus/symfony-bridge": {
+        "version": "v5.3.0"
     },
     "symfony/cache": {
         "version": "v4.2.8"

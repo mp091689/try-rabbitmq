@@ -28,39 +28,44 @@ services:
 
     App\Repository\ContactRepositoryInterface: '@App\Repository\ContactRepository'
     App\Producer\ContactProducerInterface: '@old_sound_rabbit_mq.contact_producer'
-    App\Services\CacheServiceInterface: '@App\Services\CacheService'
 
     App\Consumer\CreateContactConsumer:
         arguments:
-            - '@doctrine.orm.entity_manager'
-            - '@App\Services\CacheServiceInterface'
-            - '@validator'
-            - '@monolog.logger.contact'
+            - '@simple_bus.command_bus'
+
     App\Consumer\UpdateContactConsumer:
         arguments:
-            - '@doctrine.orm.entity_manager'
-            - '@App\Services\CacheServiceInterface'
-            - '@validator'
-            - '@monolog.logger.contact'
+            - '@simple_bus.command_bus'
+
     App\Consumer\DeleteContactConsumer:
         arguments:
-            - '@doctrine.orm.entity_manager'
-            - '@App\Services\CacheServiceInterface'
-            - '@monolog.logger.contact'
+            - '@simple_bus.command_bus'
 
-    redis_cache_service:
-        class: Doctrine\Common\Cache\RedisCache
-        calls:
-            -   method: setRedis
-                arguments:
-                    - '@redis'
-    redis:
-        class: Redis
-        public: false
-        calls:
-            -   method: connect
-                arguments:
-                    - '/var/run/redis/redis.sock' # or host/ip with port
-            -   method: select
-                arguments:
-                    - 13 # change database by index
+    event_listener.contact_entity:
+        class: App\EventListener\ContactEventListener
+        tags:
+            - { name: doctrine.event_listener, event: onFlush }
+
+    command.contact.create:
+        class: App\SimpleBus\CreateContactCommandHandler
+        tags: [{ name: command_handler, handles: App\SimpleBus\CreateContactCommand }]
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@validator"
+            - "@monolog.logger.contact"
+
+    command.contact.update:
+        class: App\SimpleBus\UpdateContactCommandHandler
+        tags: [{ name: command_handler, handles: App\SimpleBus\UpdateContactCommand }]
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@validator"
+            - "@monolog.logger.contact"
+
+    command.contact.delete:
+        class: App\SimpleBus\DeleteContactCommandHandler
+        tags: [{ name: command_handler, handles: App\SimpleBus\DeleteContactCommand }]
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@validator"
+            - "@monolog.logger.contact"

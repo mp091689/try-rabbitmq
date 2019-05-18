@@ -6,13 +6,10 @@ declare(strict_types=1);
 
 namespace App\Consumer;
 
-use App\Entity\Contact;
-use App\Services\CacheServiceInterface;
-use Doctrine\ORM\EntityManagerInterface;
+use App\SimpleBus\UpdateContactCommand;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
+use SimpleBus\SymfonyBridge\Bus\CommandBus;
 
 /**
  * Class UpdateContactConsumer
@@ -20,43 +17,19 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class UpdateContactConsumer implements ConsumerInterface
 {
     /**
-     * @var EntityManagerInterface
+     * @var CommandBus
      */
-    private $entityManager;
-
-    /**
-     * @var CacheServiceInterface
-     */
-    private $cacheService;
-
-    /**
-     * @var ValidatorInterface
-     */
-    private $validator;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private $commandBus;
 
     /**
      * ContactConsumer constructor.
      *
-     * @param EntityManagerInterface $entityManager
-     * @param CacheServiceInterface  $cacheService
-     * @param ValidatorInterface     $validator
-     * @param LoggerInterface        $logger
+     * @param CommandBus $commandBus
      */
     public function __construct(
-        EntityManagerInterface $entityManager,
-        CacheServiceInterface $cacheService,
-        ValidatorInterface $validator,
-        LoggerInterface $logger
+        CommandBus $commandBus
     ) {
-        $this->entityManager = $entityManager;
-        $this->cacheService = $cacheService;
-        $this->validator = $validator;
-        $this->logger = $logger;
+        $this->commandBus = $commandBus;
     }
 
     /**
@@ -66,30 +39,8 @@ class UpdateContactConsumer implements ConsumerInterface
      */
     public function execute(AMQPMessage $msg)
     {
-        try {
-            $body = json_decode($msg->getBody(), true);
-            $this->entityManager->getConnection()->connect();
-            $contact = $this->entityManager->getRepository(Contact::class)->findOneBy(['id' => $body['id']]);
-            if (!$contact) {
-                $this->logger->error("Contact was not found with id: {$body['id']}");
-
-                return;
-            }
-            $contact->setFirstName($body['data']['firstName']);
-            $errors = $this->validator->validate($contact);
-            if (count($errors) > 0) {
-                $this->logger->error((string)$errors);
-
-                return;
-            }
-            $this->entityManager->merge($contact);
-            $this->entityManager->flush();
-            $cacheKey = $contact->getId() . '_' . Contact::class;
-            $this->cacheService->setValue($cacheKey, $contact);
-            $this->entityManager->clear();
-            $this->entityManager->getConnection()->close();
-        } catch (\Exception $e) {
-            $this->logger->critical($e->getMessage());
-        }
+        $command = new UpdateContactCommand();
+        $command->data = $msg->getBody();
+        $this->commandBus->handle($command);
     }
 }

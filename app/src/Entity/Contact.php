@@ -4,11 +4,11 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ContactRepository")
- * @UniqueEntity("firstName")
+ * @UniqueEntity("firstName", message="First name is already exists")
  */
 class Contact
 {
@@ -21,12 +21,12 @@ class Contact
 
     /**
      * @ORM\Column(type="string", length=50, unique=true)
-     * @Assert\NotBlank(message="fist name can not be blank")
-     * @Assert\Length(
+     * @Constraints\NotBlank(message="Fist name can not be blank")
+     * @Constraints\Length(
      *     min = 2,
      *     max = 50,
-     *     minMessage = "You first name must be at least {{ limit }} characters long",
-     *     maxMessage = "You first name cannot be longer than {{ limit }} characters"
+     *     minMessage = "Your first name must be at least {{ limit }} characters long",
+     *     maxMessage = "Your first name cannot be longer than {{ limit }} characters"
      * )
      */
     private $firstName = "";

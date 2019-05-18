@@ -5,7 +5,7 @@ namespace App\Controller;
 
 use App\Producer\ContactProducerInterface;
 use App\Repository\ContactRepositoryInterface;
-use Doctrine\ORM\EntityManagerInterface;
+use App\SimpleBus\MyService;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Routing\ClassResourceInterface;
@@ -21,11 +21,6 @@ use Symfony\Component\HttpFoundation\Response;
 class ContactController extends AbstractFOSRestController implements ClassResourceInterface
 {
     /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    /**
      * @var ContactRepositoryInterface
      */
     private $contactRepository;
@@ -36,11 +31,9 @@ class ContactController extends AbstractFOSRestController implements ClassResour
     private $contactProducer;
 
     public function __construct(
-        EntityManagerInterface $entityManager,
         ContactRepositoryInterface $contactRepository,
         ContactProducerInterface $contactProducer
     ) {
-        $this->entityManager = $entityManager;
         $this->contactRepository = $contactRepository;
         $this->contactProducer = $contactProducer;
     }
@@ -108,15 +101,8 @@ class ContactController extends AbstractFOSRestController implements ClassResour
      */
     public function putAction(Request $request, int $id): JsonResponse
     {
-        $data = json_encode(
-            [
-                'id' => $id,
-                'data' => json_decode($request->getContent(), true),
-            ]
-        );
-
+        $data = json_encode(['id' => $id] + json_decode($request->getContent(), true));
         $this->contactProducer->publish($data, 'update');
-
         $status = Response::HTTP_OK;
 
         return $this->json(

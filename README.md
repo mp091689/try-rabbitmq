@@ -32,8 +32,7 @@ Response:
   {
     "id":1,
     "firstName":"Name"
-  },
-  ...
+  }
 ]
 ```
 

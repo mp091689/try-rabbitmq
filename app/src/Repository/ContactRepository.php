@@ -4,9 +4,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\Contact;
-use App\Services\CacheServiceInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -16,42 +14,28 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
 class ContactRepository extends ServiceEntityRepository implements ContactRepositoryInterface
 {
     /**
-     * @var CacheServiceInterface
-     */
-    private $cacheService;
-
-    /**
      * ContactRepository constructor.
      *
-     * @param RegistryInterface     $registry
-     * @param CacheServiceInterface $cacheService
+     * @param RegistryInterface $registry
      */
     public function __construct(
-        RegistryInterface $registry,
-        CacheServiceInterface $cacheService
+        RegistryInterface $registry
     ) {
         parent::__construct($registry, Contact::class);
-        $this->cacheService = $cacheService;
     }
 
     /**
      * {@inheritDoc}
+     * @throws \Doctrine\ORM\ORMException
      */
     public function find($id, $lockMode = null, $lockVersion = null)
     {
-        $cacheKey = $id . '_' . $this->getEntityName();
-        $cache = $this->cacheService->getValue($cacheKey);
-        if ($cache !== null) {
-            return $cache;
-        }
-        $result = $query = $this->createQueryBuilder('c')
+        return $query = $this->createQueryBuilder('c')
             ->andWhere('c.id = :id')
             ->setParameter('id', $id)
             ->getQuery()
+            ->useResultCache(true, null, md5($id . '_' . $this->getEntityName()))
             ->getResult();
-        $this->cacheService->setValue($cacheKey, $result);
-
-        return $result;
     }
 
     /**
@@ -59,29 +43,10 @@ class ContactRepository extends ServiceEntityRepository implements ContactReposi
      */
     public function findAll()
     {
-        $cacheKey = 'ALL_' . Contact::class;
-        $cache = $this->cacheService->getValue($cacheKey);
-        if ($cache !== null) {
-            return $cache;
-        }
-        $result = $query = $this->findBy([]);
-        $this->cacheService->setValue($cacheKey, $result);
-
-        return $result;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function findAllByFirstName(string $firstName): array
-    {
-        $query = $this->createQueryBuilder('c')
-            ->setMaxResults(100)->setFirstResult(0)
-            ->andWhere('c.firstName = :val')
-            ->setParameter('val', $firstName)
-            ->getQuery();
-
-        return $query->getResult();
+        return $this->createQueryBuilder('c')
+            ->getQuery()
+            ->useResultCache(true, null, md5('ALL_' . $this->getEntityName()))
+            ->getResult();
     }
 }
 

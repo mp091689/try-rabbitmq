@@ -6,13 +6,10 @@ declare(strict_types=1);
 
 namespace App\Consumer;
 
-use App\Entity\Contact;
-use App\Services\CacheServiceInterface;
-use Doctrine\ORM\EntityManagerInterface;
+use App\SimpleBus\DeleteContactCommand;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
+use SimpleBus\SymfonyBridge\Bus\CommandBus;
 
 /**
  * Class DeleteContactConsumer
@@ -20,40 +17,19 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class DeleteContactConsumer implements ConsumerInterface
 {
     /**
-     * @var EntityManagerInterface
+     * @var CommandBus
      */
-    private $entityManager;
-
-    /**
-     * @var CacheServiceInterface
-     */
-    private $cacheService;
-
-    /**
-     * @var ValidatorInterface
-     */
-    private $validator;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private $commandBus;
 
     /**
      * ContactConsumer constructor.
      *
-     * @param EntityManagerInterface $entityManager
-     * @param CacheServiceInterface  $cacheService
-     * @param LoggerInterface        $logger
+     * @param CommandBus $commandBus
      */
     public function __construct(
-        EntityManagerInterface $entityManager,
-        CacheServiceInterface $cacheService,
-        LoggerInterface $logger
+        CommandBus $commandBus
     ) {
-        $this->entityManager = $entityManager;
-        $this->cacheService = $cacheService;
-        $this->logger = $logger;
+        $this->commandBus = $commandBus;
     }
 
     /**
@@ -63,24 +39,8 @@ class DeleteContactConsumer implements ConsumerInterface
      */
     public function execute(AMQPMessage $msg)
     {
-        try {
-            $id = $msg->getBody();
-            $this->entityManager->getConnection()->connect();
-            $contact = $this->entityManager->getRepository(Contact::class)->findOneBy(['id' => $id]);
-            if (!$contact) {
-                $this->logger->error("Contact was not found with id: {$id}");
-
-                return;
-            }
-            $entity = $this->entityManager->merge($contact);
-            $this->entityManager->remove($entity);
-            $this->entityManager->flush();
-            $cacheKey = $id . '_' . Contact::class;
-            $this->cacheService->delValue($cacheKey);
-            $this->entityManager->clear();
-            $this->entityManager->getConnection()->close();
-        } catch (\Exception $e) {
-            $this->logger->critical($e->getMessage());
-        }
+        $command = new DeleteContactCommand();
+        $command->data = $msg->getBody();
+        $this->commandBus->handle($command);
     }
 }
