@@ -8,6 +8,7 @@ namespace App\Repository;
 
 use App\Entity\Contact;
 use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\ORM\Query;
 
 /**
  * Interface ContactRepositoryInterface
@@ -24,4 +25,11 @@ interface ContactRepositoryInterface extends ObjectRepository
      * @return Contact|null
      */
     public function findOneByUuid(string $uuid): ?Contact;
+
+    /**
+     * Find all query for paginator.
+     *
+     * @return Query
+     */
+    public function findAllQuery(): Query;
 }

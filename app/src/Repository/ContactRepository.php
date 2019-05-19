@@ -5,6 +5,7 @@ namespace App\Repository;
 
 use App\Entity\Contact;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -46,6 +47,14 @@ class ContactRepository extends ServiceEntityRepository implements ContactReposi
             ->getQuery()
             ->useResultCache(true, null, md5('ALL_' . $this->getEntityName()))
             ->getResult();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function findAllQuery(): Query
+    {
+        return $this->createQueryBuilder('c')->getQuery();
     }
 }
 

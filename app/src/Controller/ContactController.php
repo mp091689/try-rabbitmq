@@ -8,6 +8,7 @@ use App\Repository\ContactRepositoryInterface;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Routing\ClassResourceInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Ramsey\Uuid\Uuid;
 use SimpleBus\SymfonyBridge\Bus\CommandBus;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -30,31 +31,44 @@ class ContactController extends AbstractFOSRestController implements ClassResour
      * @var ContactProducerInterface
      */
     private $contactProducer;
+
     /**
      * @var CommandBus
      */
     private $commandBus;
 
+    /**
+     * @var PaginatorInterface
+     */
+    private $paginator;
+
     public function __construct(
         ContactRepositoryInterface $contactRepository,
         ContactProducerInterface $contactProducer,
-        CommandBus $commandBus
+        CommandBus $commandBus,
+        PaginatorInterface $paginator
     ) {
         $this->contactRepository = $contactRepository;
         $this->contactProducer = $contactProducer;
         $this->commandBus = $commandBus;
+        $this->paginator = $paginator;
     }
 
     /**
+     * @param Request $request
+     *
      * @return JsonResponse
      */
-    public function cgetAction(): JsonResponse
+    public function cgetAction(Request $request): JsonResponse
     {
-        // TODO: implement pagination/filtering/search
+        $query = $this->contactRepository->findAllQuery();
+        $result = $this->paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            $request->query->getInt('limit', 20)
+        );
 
-        $contacts = $this->contactRepository->findAll();
-
-        return $this->json($contacts);
+        return $this->json($result);
     }
 
     /**
