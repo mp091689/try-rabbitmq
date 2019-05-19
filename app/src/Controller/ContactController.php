@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
  * Class ContactController
  *
  * @Annotations\RouteResource("Contact", pluralize=false)
+ * @Annotations\Prefix("api")
  */
 class ContactController extends AbstractFOSRestController implements ClassResourceInterface
 {
