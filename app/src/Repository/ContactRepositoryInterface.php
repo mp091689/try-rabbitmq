@@ -6,6 +6,7 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Entity\Contact;
 use Doctrine\Common\Persistence\ObjectRepository;
 
 /**
@@ -15,4 +16,12 @@ use Doctrine\Common\Persistence\ObjectRepository;
  */
 interface ContactRepositoryInterface extends ObjectRepository
 {
+    /**
+     * Find entity by uuid.
+     *
+     * @param string $uuid UUID of needed entity.
+     *
+     * @return Contact|null
+     */
+    public function findOneByUuid(string $uuid): ?Contact;
 }

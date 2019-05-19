@@ -26,16 +26,15 @@ class ContactRepository extends ServiceEntityRepository implements ContactReposi
 
     /**
      * {@inheritDoc}
-     * @throws \Doctrine\ORM\ORMException
      */
-    public function find($id, $lockMode = null, $lockVersion = null)
+    public function findOneByUuid(string $uuid): ?Contact
     {
         return $query = $this->createQueryBuilder('c')
-            ->andWhere('c.id = :id')
-            ->setParameter('id', $id)
+            ->andWhere('c.uuid = :uuid')
+            ->setParameter('uuid', $uuid)
             ->getQuery()
-            ->useResultCache(true, null, md5($id . '_' . $this->getEntityName()))
-            ->getResult();
+            ->useResultCache(true, null, md5($uuid . '_' . $this->getEntityName()))
+            ->getOneOrNullResult();
     }
 
     /**

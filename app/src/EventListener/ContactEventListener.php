@@ -28,7 +28,7 @@ class ContactEventListener
     {
         foreach ($schedule as $entity) {
             if ($entity instanceof Contact) {
-                $cache->delete(md5($entity->getId() . '_' . Contact::class));
+                $cache->delete(md5($entity->getUuid() . '_' . Contact::class));
                 $cache->delete(md5('ALL_' . Contact::class));
             }
         }

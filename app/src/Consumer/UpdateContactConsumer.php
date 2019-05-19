@@ -6,9 +6,10 @@ declare(strict_types=1);
 
 namespace App\Consumer;
 
-use App\SimpleBus\UpdateContactCommand;
+use App\SimpleBus\Contact\UpdateContactCommand;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
+use Psr\Log\LoggerInterface;
 use SimpleBus\SymfonyBridge\Bus\CommandBus;
 
 /**
@@ -22,14 +23,22 @@ class UpdateContactConsumer implements ConsumerInterface
     private $commandBus;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * ContactConsumer constructor.
      *
-     * @param CommandBus $commandBus
+     * @param CommandBus      $commandBus
+     * @param LoggerInterface $logger
      */
     public function __construct(
-        CommandBus $commandBus
+        CommandBus $commandBus,
+        LoggerInterface $logger
     ) {
         $this->commandBus = $commandBus;
+        $this->logger = $logger;
     }
 
     /**
@@ -39,8 +48,14 @@ class UpdateContactConsumer implements ConsumerInterface
      */
     public function execute(AMQPMessage $msg)
     {
-        $command = new UpdateContactCommand();
-        $command->data = $msg->getBody();
-        $this->commandBus->handle($command);
+        try {
+            $command = new UpdateContactCommand();
+            $command->setData($msg->getBody());
+            $this->commandBus->handle($command);
+        } catch (\Throwable $e) {
+            $this->logger->error($e->getMessage());
+
+            return self::MSG_REJECT;
+        }
     }
 }

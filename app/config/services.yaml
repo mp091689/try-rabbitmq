@@ -32,14 +32,17 @@ services:
     App\Consumer\CreateContactConsumer:
         arguments:
             - '@simple_bus.command_bus'
+            - '@monolog.logger'
 
     App\Consumer\UpdateContactConsumer:
         arguments:
             - '@simple_bus.command_bus'
+            - '@monolog.logger'
 
     App\Consumer\DeleteContactConsumer:
         arguments:
             - '@simple_bus.command_bus'
+            - '@monolog.logger'
 
     event_listener.contact_entity:
         class: App\EventListener\ContactEventListener
@@ -47,24 +50,24 @@ services:
             - { name: doctrine.event_listener, event: onFlush }
 
     command.contact.create:
-        class: App\SimpleBus\CreateContactCommandHandler
-        tags: [{ name: command_handler, handles: App\SimpleBus\CreateContactCommand }]
+        class: App\SimpleBus\Contact\CreateContactCommandHandler
+        tags: [{ name: command_handler, handles: App\SimpleBus\Contact\CreateContactCommand }]
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@validator"
             - "@monolog.logger.contact"
 
     command.contact.update:
-        class: App\SimpleBus\UpdateContactCommandHandler
-        tags: [{ name: command_handler, handles: App\SimpleBus\UpdateContactCommand }]
+        class: App\SimpleBus\Contact\UpdateContactCommandHandler
+        tags: [{ name: command_handler, handles: App\SimpleBus\Contact\UpdateContactCommand }]
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@validator"
             - "@monolog.logger.contact"
 
     command.contact.delete:
-        class: App\SimpleBus\DeleteContactCommandHandler
-        tags: [{ name: command_handler, handles: App\SimpleBus\DeleteContactCommand }]
+        class: App\SimpleBus\Contact\DeleteContactCommandHandler
+        tags: [{ name: command_handler, handles: App\SimpleBus\Contact\DeleteContactCommand }]
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@validator"
