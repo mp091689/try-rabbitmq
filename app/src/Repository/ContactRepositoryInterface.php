@@ -27,9 +27,11 @@ interface ContactRepositoryInterface extends ObjectRepository
     public function findOneByUuid(string $uuid): ?Contact;
 
     /**
-     * Find all query for paginator.
+     * Returns filter query for paginator.
+     *
+     * @param string $filter
      *
      * @return Query
      */
-    public function findAllQuery(): Query;
+    public function getFilterQuery(string $filter): Query;
 }

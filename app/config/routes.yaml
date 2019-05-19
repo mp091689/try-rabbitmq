@@ -1,3 +1,6 @@
 contact:
-  type: rest
   resource: App\Controller\ContactController
+
+api.contact:
+  type: rest
+  resource: App\Controller\Rest\ContactController

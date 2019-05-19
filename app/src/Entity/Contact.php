@@ -12,6 +12,7 @@ use Symfony\Component\Validator\Constraints;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ContactRepository")
+ * @ORM\Table(indexes={@ORM\Index(name="first_name_idx", columns={"first_name"})})
  */
 class Contact
 {
@@ -24,14 +25,14 @@ class Contact
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
-    private $id;
+    protected $id;
 
     /**
      * Generates manually before sand to queue.
      *
      * @ORM\Column(type="string", unique=true)
      */
-    private $uuid;
+    protected $uuid;
 
     /**
      * @ORM\Column(type="string", length=50)
@@ -43,7 +44,7 @@ class Contact
      *     maxMessage = "First name cannot be longer than {{ limit }} characters"
      * )
      */
-    private $firstName;
+    protected $firstName;
 
     /**
      * @ORM\Column(type="string", length=50)
@@ -55,7 +56,7 @@ class Contact
      *     maxMessage = "Last name cannot be longer than {{ limit }} characters"
      * )
      */
-    private $lastName;
+    protected $lastName;
 
     /**
      * @ORM\Column(type="array")
@@ -68,7 +69,7 @@ class Contact
      *      )
      * })
      */
-    private $phoneNumbers;
+    protected $phoneNumbers;
 
     /**
      * @return int|null

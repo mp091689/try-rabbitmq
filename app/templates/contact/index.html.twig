@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Contacts{% endblock %}
+
+{% block body %}
+    <div class="example-wrapper">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <h1>Contacts</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <form class="form-inline" method="get" action="{{ path('contact') }}">
+                        <div class="input-group mb-3">
+                            <input name="filter" type="text" class="form-control" placeholder="First Name" aria-label="First Name" aria-describedby="filter-btn">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-primary" type="submit" id="filter-btn">Search</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <table class="table">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">{{ knp_pagination_sortable(pagination, 'First Name', 'c.firstName') }}</th>
+                            <th scope="col">Last Name</th>
+                            <th scope="col">Phone Numbers</th>
+                            <th scope="col">UUID</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for contact in pagination %}
+                            <tr {% if loop.index is odd %}class="color"{% endif %}>
+                                <td>{{ contact.getFirstName }}</td>
+                                <td>{{ contact.getLastName }}</td>
+                                <td>{{ contact.getPhoneNumbers | join(',') }}</td>
+                                <td>{{ contact.getUuid }}</td>
+                            </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col text-center">
+                    {{ knp_pagination_render(pagination) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

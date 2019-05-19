@@ -52,9 +52,13 @@ class ContactRepository extends ServiceEntityRepository implements ContactReposi
     /**
      * {@inheritDoc}
      */
-    public function findAllQuery(): Query
+    public function getFilterQuery(string $filter): Query
     {
-        return $this->createQueryBuilder('c')->getQuery();
+        $filter = strtolower($filter);
+        return $this->createQueryBuilder('c')
+            ->where('LOWER(c.firstName) LIKE :firstName')
+            ->setParameter('firstName', "%{$filter}%")
+            ->getQuery();
     }
 }
 
