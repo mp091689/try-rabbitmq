@@ -2,7 +2,7 @@
 
 Clone the project where you want:
 
-`git clone git@github.com:mp091689/test.git test`
+`$ git clone git@github.com:mp091689/test.git test`
 
 Go to dockerized folder and run docker-compose:
 
