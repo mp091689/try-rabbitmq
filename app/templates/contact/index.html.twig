@@ -37,10 +37,10 @@
 
                         {% for contact in pagination %}
                             <tr {% if loop.index is odd %}class="color"{% endif %}>
-                                <td>{{ contact.firstName }}</td>
-                                <td>{{ contact.lastName }}</td>
-                                <td>{{ contact.phoneNumbers | join(', ') }}</td>
-                                <td>{{ contact.uuid }}</td>
+                                <td>{{ contact.getFirstName }}</td>
+                                <td>{{ contact.getLastName }}</td>
+                                <td>{{ contact.getPhoneNumbers | join(', ') }}</td>
+                                <td>{{ contact.getUuid }}</td>
                             </tr>
                         {% endfor %}
 

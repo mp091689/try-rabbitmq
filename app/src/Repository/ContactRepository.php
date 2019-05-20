@@ -27,11 +27,11 @@ class ContactRepository extends ServiceEntityRepository implements ContactReposi
 
     /**
      * {@inheritDoc}
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function findOneByUuid(string $uuid): array
+    public function findOneByUuid(string $uuid): ?Contact
     {
         return $query = $this->createQueryBuilder('c')
-            ->select(['c.uuid', 'c.firstName', 'c.lastName', 'c.phoneNumbers',])
             ->andWhere('c.uuid = :uuid')
             ->setParameter('uuid', $uuid)
             ->getQuery()
@@ -59,7 +59,6 @@ class ContactRepository extends ServiceEntityRepository implements ContactReposi
         $filter = strtolower($filter);
 
         return $this->createQueryBuilder('c')
-            ->select(['c.uuid', 'c.firstName', 'c.lastName', 'c.phoneNumbers',])
             ->where('LOWER(c.firstName) LIKE :firstName')
             ->setParameter('firstName', "%{$filter}%")
             ->getQuery();

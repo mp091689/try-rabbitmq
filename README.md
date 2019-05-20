@@ -2,22 +2,36 @@
 
 Clone the project where you want:
 
-`$ git clone git@github.com:mp091689/test.git test`
+```bash
+$ git clone git@github.com:mp091689/test.git test
+```
 
 Go to dockerized folder and run docker-compose:
 
-`$ cd test/dockerized && cp .env.example .env && CURRENT_UID=$(id -u):$(id -g) docker-compose up`
+```bash
+$ cd test/dockerized && cp .env.example .env && docker-compose up
+```
 
-All needed dependencies will be installed automatically, be aware if you have first start the installation
-can take time.
+Etnter into container
 
-Next commands are should be executed as non root. Enter in to php container:
+```bash
+$ docker exec -it dockerized_php_1 su dev
+```
 
-`$ docker exec -it dockerized_php_1 su dev`
+ Install dependencies
+```bash
+$ composer install
+```
 
-Run migrations:
+Run migrations
+```bash
+$ bin/console doctrine:migrations:migrate
+```
 
-`$ bin/console doctrine:migrations:migrate`
+Run rabbitmq consumers
+```bash
+$ bin/console rabbitmq:multiple-consumer contact
+```
 
 ## Usage
 
@@ -33,7 +47,8 @@ Response:
 
 ```json
 [
-    {  
+    {
+        "id": "1",  
         "uuid": "6f5e2c90-bf7b-4183-96df-fd5a162aff71",
         "firstName": "John",
         "lastName": "Snow",
@@ -61,6 +76,7 @@ Response:
 
 ```json
 {  
+    "id": "1",
     "uuid": "6f5e2c90-bf7b-4183-96df-fd5a162aff71",
     "firstName": "John",
     "lastName": "Snow",

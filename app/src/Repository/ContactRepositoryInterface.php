@@ -22,9 +22,9 @@ interface ContactRepositoryInterface extends ObjectRepository
      *
      * @param string $uuid UUID of needed entity.
      *
-     * @return array
+     * @return Contact|null
      */
-    public function findOneByUuid(string $uuid): array ;
+    public function findOneByUuid(string $uuid): ?Contact;
 
     /**
      * Returns filter query for paginator.
