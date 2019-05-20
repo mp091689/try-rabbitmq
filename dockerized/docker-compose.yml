@@ -25,6 +25,7 @@ services:
             - ${APP_PATH}:/app
         depends_on:
             - mq
+        user: ${CURRENT_UID}
         command: /bin/ash -c "composer install && bin/console rabbitmq:multiple-consumer contact"
     db:
         image: mysql:5.7
