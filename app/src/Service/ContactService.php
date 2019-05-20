@@ -15,6 +15,9 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class ContactService
 {
+    public const DEFAULT_LIMIT = 20;
+    public const MAX_LIMIT = 1000;
+
     /**
      * @var ContactRepositoryInterface
      */
@@ -37,15 +40,17 @@ class ContactService
      * @param Request $request
      *
      * @return \Knp\Component\Pager\Pagination\PaginationInterface
+     * @throws \Exception
      */
     public function getContacts(Request $request)
     {
+        $page = $request->query->getInt('page', 1);
+        $limit = $request->query->getInt('limit', self::DEFAULT_LIMIT);
+        if ($limit > 1000) {
+            throw new \Exception("Limit is high: {$limit}. Maximum limit value: " . self::MAX_LIMIT);
+        }
         $query = $this->contactRepository->getFilterQuery($request->query->getAlnum('filter'));
-        $result = $this->paginator->paginate(
-            $query,
-            $request->query->getInt('page', 1),
-            $request->query->getInt('limit', 20)
-        );
+        $result = $this->paginator->paginate($query, $page, $limit);
 
         return $result;
     }

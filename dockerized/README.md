@@ -6,6 +6,8 @@ The server runs several containers:
 * NGINX
 * PHP-FPM:7.3
 * MySQL:5.7
+* Redis
+* RabbitMQ
 
 ### [Usage](docs/usage.md)
 

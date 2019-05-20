@@ -31,6 +31,7 @@ class ContactRepository extends ServiceEntityRepository implements ContactReposi
     public function findOneByUuid(string $uuid): ?Contact
     {
         return $query = $this->createQueryBuilder('c')
+            ->select(['c.uuid', 'c.firstName', 'c.lastName', 'c.phoneNumbers',])
             ->andWhere('c.uuid = :uuid')
             ->setParameter('uuid', $uuid)
             ->getQuery()
@@ -44,6 +45,7 @@ class ContactRepository extends ServiceEntityRepository implements ContactReposi
     public function findAll()
     {
         return $this->createQueryBuilder('c')
+            ->select(['c.uuid', 'c.firstName', 'c.lastName', 'c.phoneNumbers',])
             ->getQuery()
             ->useResultCache(true, null, md5('ALL_' . $this->getEntityName()))
             ->getResult();
@@ -55,7 +57,9 @@ class ContactRepository extends ServiceEntityRepository implements ContactReposi
     public function getFilterQuery(string $filter): Query
     {
         $filter = strtolower($filter);
+
         return $this->createQueryBuilder('c')
+            ->select(['c.uuid', 'c.firstName', 'c.lastName', 'c.phoneNumbers',])
             ->where('LOWER(c.firstName) LIKE :firstName')
             ->setParameter('firstName', "%{$filter}%")
             ->getQuery();

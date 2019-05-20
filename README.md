@@ -4,46 +4,67 @@ Go to dockerized folder and run docker-compose:
 
 `$ cd PATH/TO/PROJECT/dockerized && cp .env.example .env && docker-compose up`
 
-Also we need to install dependencies using composer 
-and start rabbitmq consumer. To start it we need
-to enter into the php container
+Next commands are should be executed as non root. Enter in to php container:
 
 `$ docker exec -it dockerized_php_1 su dev`
 
-Inside the container run commands:
+Install composer dependencies:
 
 `$ composer install`
 
-`$ bin/console rabbitmq:multiple-consumer contact`
+Run migrations:
+
+`$ bin/console doctrine:migrations:migrate`
 
 ## Usage
 
-Project should be accessible with `localhost:8080`
-or `app.local:8080` if /etc/hosts are configured.
+Configure /etc/hosts. Add to the end of hosts `127.0.0.1 app.local`.
+Project should be accessible with [app.local:8080](http://app.local:8080)
+or `localhost:8080` with out configurations.
 
 Available routes:
 
-`GET /contact` - get all records.
+`GET /api/contact` - get all records.
 
 Response:
 
 ```json
 [
-  {
-    "id":1,
-    "firstName":"Name"
-  }
+    {  
+        "uuid": "6f5e2c90-bf7b-4183-96df-fd5a162aff71",
+        "firstName": "John",
+        "lastName": "Snow",
+        "phoneNumbers": [
+            "812 123-1234",
+            "916 123-4567"
+        ]
+    }
 ]
 ```
 
-`GET /contact/{id}` - get contact with specified id.
+Filtering:
+`$ GET /api/contact?filter=John`
+
+Sorting:
+`$ GET /api/contact?sort=c.firstName&direction=desc`
+
+Pagination:
+`$ GET /api/contact?page=1&limit=20`
+
+
+`GET /contact/{uuid}` - get contact with specified uuid.
 
 Response:
 
 ```json
-{
-  "id":1,
-  "firstName":"Name"
+{  
+    "uuid": "6f5e2c90-bf7b-4183-96df-fd5a162aff71",
+    "firstName": "John",
+    "lastName": "Snow",
+    "phoneNumbers": [
+        "812 123-1234",
+        "916 123-4567"
+    ]
 }
 ```
 
@@ -51,23 +72,42 @@ Response:
 
 Expects JSON body:
 ```json
-{
-  "firstName": "Name"
+{  
+    "firstName": "John",
+    "lastName": "Snow",
+    "phoneNumbers": [
+        "812 123-1234",
+        "916 123-4567"
+    ]
 }
 ```
 
-`PUT /contact/{id}` - update contact with specified id.
+Response:
+```json
+{
+    "status": "OK",
+    "message": "Sent to the queue. Entity uuid: 6f5e2c90-bf7b-4183-96df-fd5a162aff71"
+}
+```
+
+
+`PUT /contact/{uuid}` - update contact with specified uuid.
 
 Expects JSON body:
 ```json
-{
-  "firstName": "NewName"
-}
+{  
+        "firstName": "Jaehaerys",
+        "lastName": "Targaryen",
+        "phoneNumbers": [
+            "812 123-1234",
+            "916 123-4567"
+        ]
+    }
 ```
 
-`DELETE /contact/{id}` - delete contact with specified id.
+`DELETE /contact/{uuid}` - delete contact with specified uuid.
 
-POST, PUT, DELETE requests are send one response:
+PUT, DELETE requests are send one response:
 ```json
 {
   "status":"OK",
@@ -87,11 +127,13 @@ All validation and other error are logged in `app/var/log/contact.log`
 
 ## Additional
 
-RabbitMQ UI is accessible by link http://localhost:15672
+RabbitMQ UI is accessible by link [localhost:15672](http://localhost:15672)
 
 > login: mquser
 >
 > password : mqsecret
+
+Consumers are will be started automatically.
 
 Redis CLI is accessible with console command
 

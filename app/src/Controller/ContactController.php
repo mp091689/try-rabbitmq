@@ -26,10 +26,11 @@ class ContactController extends AbstractController
     }
 
     /**
-     * @Route("/contact", name="contact")
+     * @Route("/", name="contact")
      * @param Request $request
      *
      * @return \Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
      */
     public function index(Request $request): Response
     {
