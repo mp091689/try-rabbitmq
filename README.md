@@ -2,9 +2,7 @@
 
 Clone the project where you want:
 
-`git clone git@github.com:mp091689/test.git .`
-
-The `git clone` command will create `test` folder with project.
+`git clone git@github.com:mp091689/test.git test`
 
 Go to dockerized folder and run docker-compose:
 
