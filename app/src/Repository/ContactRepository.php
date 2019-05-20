@@ -42,18 +42,6 @@ class ContactRepository extends ServiceEntityRepository implements ContactReposi
     /**
      * {@inheritDoc}
      */
-    public function findAll()
-    {
-        return $this->createQueryBuilder('c')
-            ->select(['c.uuid', 'c.firstName', 'c.lastName', 'c.phoneNumbers',])
-            ->getQuery()
-            ->useResultCache(true, null, md5('ALL_' . $this->getEntityName()))
-            ->getResult();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function getFilterQuery(string $filter): Query
     {
         $filter = strtolower($filter);
