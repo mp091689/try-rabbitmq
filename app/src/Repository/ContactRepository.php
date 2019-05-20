@@ -28,7 +28,7 @@ class ContactRepository extends ServiceEntityRepository implements ContactReposi
     /**
      * {@inheritDoc}
      */
-    public function findOneByUuid(string $uuid): ?Contact
+    public function findOneByUuid(string $uuid): array
     {
         return $query = $this->createQueryBuilder('c')
             ->select(['c.uuid', 'c.firstName', 'c.lastName', 'c.phoneNumbers',])
