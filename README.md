@@ -2,7 +2,7 @@
 
 Go to dockerized folder and run docker-compose:
 
-`$ cd PATH/TO/PROJECT/dockerized && cp .env.example .env && docker-compose up`
+`$ cd PATH/TO/PROJECT/dockerized && cp .env.example .env && CURRENT_UID=$(id -u):$(id -g) docker-compose up`
 
 Next commands are should be executed as non root. Enter in to php container:
 
