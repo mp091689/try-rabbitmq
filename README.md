@@ -4,13 +4,12 @@ Go to dockerized folder and run docker-compose:
 
 `$ cd PATH/TO/PROJECT/dockerized && cp .env.example .env && CURRENT_UID=$(id -u):$(id -g) docker-compose up`
 
+All needed dependencies will be installed automatically, be aware if you have first start the installation
+can take time.
+
 Next commands are should be executed as non root. Enter in to php container:
 
 `$ docker exec -it dockerized_php_1 su dev`
-
-Install composer dependencies:
-
-`$ composer install`
 
 Run migrations:
 
