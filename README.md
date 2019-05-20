@@ -1,8 +1,14 @@
 ## How to start project
 
+Clone the project where you want:
+
+`git clone git@github.com:mp091689/test.git .`
+
+The `git clone` command will create `test` folder with project.
+
 Go to dockerized folder and run docker-compose:
 
-`$ cd PATH/TO/PROJECT/dockerized && cp .env.example .env && CURRENT_UID=$(id -u):$(id -g) docker-compose up`
+`$ cd test/dockerized && cp .env.example .env && CURRENT_UID=$(id -u):$(id -g) docker-compose up`
 
 All needed dependencies will be installed automatically, be aware if you have first start the installation
 can take time.
